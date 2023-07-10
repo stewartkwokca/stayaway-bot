@@ -1,0 +1,12 @@
+Commands:
+`!area`: Check your current area.
+`!areas`: Check number of players in each area.
+`!end`: Check when the current round ends.
+`!help`: Returns list of commands (this text!)
+`!id`: Check your id.
+`!leaderboard`: Check global leaderboard
+`!move n` (where `n` is the area number): Move between areas
+`!score`: Check your score (number of wins)
+`!start`: Create a profile (one Stay Away profile per discord account)
+
+To start a DM with StayAway Bot, add a question mark before any command, like `?!start`.
