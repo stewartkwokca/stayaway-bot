@@ -35,6 +35,7 @@ def is_game_over():
     return False
 
 async def game_over():
+    winners.clear()
     for area in playing:
         for player in area:
             player.win()
@@ -68,16 +69,28 @@ async def round_over():
             eliminated.append(player)
         area.clear()
 
+    players_left = 0
+    for area in min_areas:
+        players_left += len(area)
+    if players_left < 5:
+        for player in players:
+            await bot.initiate_message(bot.client.get_user(int(player.id)), "There are less than five players left.")
+        await game_over()
+        return
     for player in players:
         await bot.initiate_message(bot.client.get_user(int(player.id)), interactions.game_message("Round Over", player.id))
 
 async def check_at_timeUp():
-    if is_game_over():
-        await game_over()
-    else:
-        await round_over()
-    update_players()
-    await timeUp()
+    try:
+        if is_game_over():
+            await game_over()
+        else:
+            await round_over()
+        update_players()
+    except Exception as e:
+        await bot.initiate_message(bot.client.get_user(717943669801353300), e)
+    finally:
+        await timeUp()
 
 async def timeUp():
     global target_time

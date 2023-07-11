@@ -38,7 +38,7 @@ def respond(message: str, user_id: str, username: str):
     elif processed_message == "score":
         return f"Your score: {game.find_by_id(user_id).wins}"
     elif processed_message == "end":
-        return f"This round ends at {game.target_time}"
+        return f"This round ends at {game.target_time} UTC"
     elif processed_message == "id":
         return f"Your ID: {user_id}"
     elif processed_message == "area":
@@ -63,6 +63,9 @@ def game_message(event: str, user_id: str) -> str:
         out += "Game Over! New game is starting, everyone is back in area 1."
         if game.is_winner(user_id):
             out += f"\nYou won! Your score is now {game.find_by_id(user_id).wins}."
+            out += "\nWinners:"
+            for winner in game.winners:
+                out += f"\n - {winner.name}"
     elif event == "Round Over":
         out += "Round Over."
         if game.is_elim(user_id):
@@ -71,6 +74,6 @@ def game_message(event: str, user_id: str) -> str:
             out += "\nYou are still alive!"
     elif event == "one min":
         out += "One minute warning!"
-    out += f"\nNext round ends at {game.target_time}."
+    out += f"\nNext round ends at {game.target_time} UTC."
 
     return out
