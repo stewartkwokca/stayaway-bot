@@ -10,7 +10,7 @@ eliminated = []
 winners = []
 target_time = ""
 
-MIN = 1
+MIN = 60
 
 class Player:
     def __init__(self, name, player_id, wins):
