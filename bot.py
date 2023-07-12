@@ -12,16 +12,25 @@ intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 client = discord.Client(intents=intents)
+
 async def send_message(message, user_message, is_private):
     try:
         response = interactions.respond(user_message, message.author.id, message.author.name)
-        await message.author.send(response) if is_private else await message.channel.send(response)
+        if response == None or len(response) == 0:
+            return
+        embed = discord.Embed(title=user_message[1:].capitalize(),
+                              description=response,
+                              color=discord.Color.blue())
+        await message.author.send(embed=embed) if is_private else await message.channel.send(embed=embed)
     except Exception as e:
         print(e)
 
-async def initiate_message(user: discord.User, message):
+async def initiate_message(user: discord.User, title, message):
+    embed = discord.Embed(title=title,
+                          description=message,
+                          color=discord.Color.blue())
     if user != None:
-        await user.send(message)
+        await user.send(embed=embed)
 
 def run_discord_bot():
     @client.event
