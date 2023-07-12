@@ -4,18 +4,18 @@ import bot
 import asyncio
 import interactions
 
-playing = [[],[],[],[],[]]
+playing = [[], [], [], [], []]
 eliminated = []
 
 winners = []
 target_time = ""
 
-MIN = 60
+MIN = 1
 
 class Player:
-    def __init__(self, name, id, wins):
+    def __init__(self, name, player_id, wins):
         self.name = name
-        self.id = id
+        self.id = player_id
         self.wins = wins
     def win(self):
         self.wins += 1
@@ -73,12 +73,10 @@ async def round_over():
     for area in min_areas:
         players_left += len(area)
     if players_left < 5:
-        for player in players:
-            await bot.initiate_message(bot.client.get_user(int(player.id)), "Alert!", "There are less than five players left.")
         await game_over()
         return
     for player in players:
-        await bot.initiate_message(bot.client.get_user(int(player.id)), "Round Over", interactions.game_message("Round Over", player.id))
+        await bot.initiate_message(bot.client.get_user(player.id), "Round Over", interactions.game_message("Round Over", player.id))
 
 async def check_at_timeUp():
     try:
@@ -93,22 +91,26 @@ async def check_at_timeUp():
         await timeUp()
 
 async def timeUp():
-    global target_time
-    now = dt.datetime.now()
-    target_time = now.replace(microsecond=0) + dt.timedelta(minutes=MIN)  # Set the desired time here
-    delta_minus_one = target_time - now - dt.timedelta(minutes=1)
+    try:
+        global target_time
+        now = dt.datetime.now()
+        target_time = now.replace(microsecond=0) + dt.timedelta(minutes=MIN)  # Set the desired time here
+        delta_minus_one = target_time - now - dt.timedelta(minutes=1)
 
-    await asyncio.sleep(delta_minus_one.total_seconds())
-    for player in players:
-        if in_area(player.id)[0] != "N":
-            await bot.initiate_message(bot.client.get_user(int(player.id)), "One Minute Warning!",
-                                       interactions.game_message("one min", player.id))
-    await asyncio.sleep(dt.timedelta(minutes=1).total_seconds())
-    await check_at_timeUp()
+        await asyncio.sleep(delta_minus_one.total_seconds())
+        for player in players:
+            if in_area(player.id)[0] != "N":
+                await bot.initiate_message(bot.client.get_user(player.id), "One Minute Warning!",
+                                           interactions.game_message("one min", player.id))
+        await asyncio.sleep(dt.timedelta(minutes=1).total_seconds())
+    except Exception as e:
+        await bot.initiate_message(bot.client.get_user(717943669801353300), "Error", e)
+    finally:
+        await check_at_timeUp()
 
-def user_with_same_id_exists(id):
+def user_with_same_id_exists(user_id):
     for player in players:
-        if player.id == id:
+        if player.id == user_id:
             return True
     return False
 
@@ -119,30 +121,30 @@ def createPlayer(name, user_id):
 def update_players():
     players_dict.clear()
     for player in players:
-        players_dict.append({"name": player.name, "id":player.id, "wins": player.wins})
+        players_dict.append({"name": player.name, "id": player.id, "wins": player.wins})
     pd.DataFrame(players_dict).to_csv("./users.csv", index=False)
 
 async def start_game():
     reset_game()
     await timeUp()
 
-def find_by_id(id):
+def find_by_id(user_id: int):
     for player in players:
-        if player.id == id:
+        if player.id == user_id:
             return player
     return None
 
-def in_area(id):
+def in_area(user_id: int):
     ctr = 0
     for area in playing:
         ctr += 1
         for player in area:
-            if player.id == id:
+            if player.id == user_id:
                 return str(ctr)
     return "N/A (You aren't in this round)"
 
-def is_elim(id):
-    return find_by_id(id) in eliminated and find_by_id(id) != None
+def is_elim(user_id: int):
+    return (find_by_id(user_id) in eliminated) and (find_by_id(user_id) is not None)
 
-def is_winner(id):
-    return find_by_id(id) in winners and find_by_id(id) != None
+def is_winner(user_id: int):
+    return (find_by_id(user_id) in winners) and (find_by_id(user_id) is not None)

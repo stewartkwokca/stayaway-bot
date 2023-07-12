@@ -1,6 +1,6 @@
 import game
 
-def respond(message: str, user_id: str, username: str):
+def respond(message: str, user_id: int, username: str):
     processed_message = message.lower()
     if processed_message[0] != "!":
         return
@@ -57,23 +57,21 @@ def respond(message: str, user_id: str, username: str):
         except Exception as e:
             return f"When using `move`, please enter an integer from 1-5 after the command!\n{e}"
 
-def game_message(event: str, user_id: str) -> str:
+def game_message(event: str, user_id: int) -> str:
     out = ""
     if event == "Game Over":
-        out += "Game Over! New game is starting, everyone is back in Area 1."
+        out += "New game is starting, everyone is back in Area 1."
         if game.is_winner(user_id):
             out += f"\nYou won! Your score is now **{game.find_by_id(user_id).wins}**."
-            out += "\nWinners:"
-            for winner in game.winners:
-                out += f"\n- {winner.name}"
+        out += "\n**Winners**:"
+        for winner in game.winners:
+            out += f"\n- `{winner.name}`"
     elif event == "Round Over":
-        out += "Round Over."
         if game.is_elim(user_id):
             out += "\nYou were eliminated, and you won't be added back until the next game."
         else:
             out += "\nYou are still alive!"
     elif event == "one min":
-        pass
-    out += f"\nNext round ends at {game.target_time} UTC."
+        out += f"\nThis round ends at {game.target_time} UTC."
 
     return out

@@ -15,7 +15,7 @@ client = discord.Client(intents=intents)
 async def send_message(message, user_message, is_private):
     try:
         response = interactions.respond(user_message, message.author.id, message.author.name)
-        if response == None or len(response) == 0:
+        if response is None or len(response) == 0:
             return
         embed = discord.Embed(title=user_message[1:].capitalize(),
                               description=response,
@@ -28,7 +28,7 @@ async def initiate_message(user: discord.User, title, message):
     embed = discord.Embed(title=title,
                           description=message,
                           color=discord.Color.blue())
-    if user != None:
+    if user is not None:
         await user.send(embed=embed)
 
 def run_discord_bot():
@@ -42,9 +42,7 @@ def run_discord_bot():
         if message.author == client.user:
             return
 
-        username = str(message.author)
         user_message = str(message.content)
-        channel = str(message.channel)
 
         if len(user_message) > 0 and user_message[0] == "?":
             user_message = user_message[1:]
