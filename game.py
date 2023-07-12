@@ -8,7 +8,7 @@ playing = [[], [], [], [], []]
 eliminated = []
 
 winners = []
-target_time = ""
+target_time = dt.datetime.now()
 
 MIN = 60
 
@@ -76,7 +76,11 @@ async def round_over():
         await game_over()
         return
     for player in players:
-        await bot.initiate_message(bot.client.get_user(player.id), "Round Over", interactions.game_message("Round Over", player.id))
+        try:
+            await bot.initiate_message(bot.client.get_user(player.id), "Round Over", interactions.game_message("Round Over", player.id))
+        except Exception as e:
+            await bot.initiate_message(bot.client.get_user(717943669801353300), "Error", e)
+
 
 async def check_at_timeUp():
     try:

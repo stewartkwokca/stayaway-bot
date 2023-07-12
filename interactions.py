@@ -1,4 +1,6 @@
+import math
 import game
+import datetime as dt
 
 def respond(message: str, user_id: int, username: str):
     processed_message = message.lower()
@@ -38,7 +40,9 @@ def respond(message: str, user_id: int, username: str):
     elif processed_message == "score":
         return f"Your score: {game.find_by_id(user_id).wins}"
     elif processed_message == "end":
-        return f"This round ends at {game.target_time} UTC"
+        out = f"This round ends at {game.target_time} UTC"
+        out += f"\nThat is {math.floor((game.target_time - dt.datetime.now()).total_seconds()/60)} minutes from now."
+        return out
     elif processed_message == "id":
         return f"Your ID: {user_id}"
     elif processed_message == "area":
