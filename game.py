@@ -10,13 +10,14 @@ eliminated = []
 winners = []
 target_time = dt.datetime.now()
 
-MIN = 60
+MIN = 1
 
 class Player:
     def __init__(self, name, player_id, wins):
         self.name = name
         self.id = player_id
         self.wins = wins
+        self.moved = False
     def win(self):
         self.wins += 1
         global winners
@@ -51,6 +52,7 @@ def reset_game():
     eliminated.clear()
     for player in players:
         playing[0].append(player)
+        player.moved = False
 
 async def round_over():
     min_count = 2**31 - 1

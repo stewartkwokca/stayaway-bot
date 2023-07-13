@@ -3,6 +3,7 @@ import game
 import datetime as dt
 
 def respond(message: str, user_id: int, username: str):
+    user = game.find_by_id(user_id)
     processed_message = message.lower()
     if processed_message[0] != "!":
         return
@@ -38,7 +39,7 @@ def respond(message: str, user_id: int, username: str):
                 break
         return out
     elif processed_message == "score":
-        return f"Your score: {game.find_by_id(user_id).wins}"
+        return f"Your score: {user.wins}"
     elif processed_message == "end":
         out = f"This round ends at {game.target_time} UTC"
         out += f"\nThat is {math.floor((game.target_time - dt.datetime.now()).total_seconds()/60)} minutes from now."
@@ -49,15 +50,19 @@ def respond(message: str, user_id: int, username: str):
         return f"You are currently in area {game.in_area(user_id)}"
     elif processed_message[:-2] == "move":
         try:
-            if int(processed_message[-1:]) > 5 or int(processed_message[-1:]) < 1:
-                return "When using `move`, please enter an integer from 1-5 after the command!"
+            if not user.moved:
+                if int(processed_message[-1:]) > 5 or int(processed_message[-1:]) < 1:
+                    return "When using `move`, please enter an integer from 1-5 after the command!"
+                else:
+                    for area in game.playing:
+                        if user in area:
+                            area.remove(user)
+                            game.playing[int(processed_message[-1:])-1].append(user)
+                            user.moved = True
+                            return f"Successfully moved to area {int(processed_message[-1:])}"
+                    return "You aren't in a game right now!"
             else:
-                for area in game.playing:
-                    if game.find_by_id(user_id) in area:
-                        area.remove(game.find_by_id(user_id))
-                        game.playing[int(processed_message[-1:])-1].append(game.find_by_id(user_id))
-                        return f"Successfully moved to area {int(processed_message[-1:])}"
-                return "You aren't in a game right now!"
+                return f"You have already moved this round! You will stay in Area {game.in_area(user_id)}."
         except Exception as e:
             return f"When using `move`, please enter an integer from 1-5 after the command!\n{e}"
 
