@@ -22,14 +22,17 @@ async def send_message(message, user_message, is_private):
                               color=discord.Color.blue())
         await message.author.send(embed=embed) if is_private else await message.channel.send(embed=embed)
     except Exception as e:
-        print(e)
+        await initiate_message(client.get_user(717943669801353300), "Error", e)
 
 async def initiate_message(user: discord.User, title, message):
-    embed = discord.Embed(title=title,
-                          description=message,
-                          color=discord.Color.blue())
-    if user is not None:
-        await user.send(embed=embed)
+    try:
+        embed = discord.Embed(title=title,
+                              description=message,
+                              color=discord.Color.blue())
+        if user is not None:
+            await user.send(embed=embed)
+    except Exception as e:
+        await initiate_message(client.get_user(717943669801353300), "Error", e)
 
 def run_discord_bot():
     @client.event

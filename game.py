@@ -42,7 +42,10 @@ async def game_over():
         area.clear()
     reset_game()
     for player in players:
-        await bot.initiate_message(bot.client.get_user(int(player.id)), "Game Over", interactions.game_message("Game Over", player.id))
+        try:
+            await bot.initiate_message(bot.client.get_user(int(player.id)), "Game Over", interactions.game_message("Game Over", player.id))
+        except Exception as e:
+            await bot.initiate_message(bot.client.get_user(717943669801353300), "Error", e)
 
 def reset_game():
     eliminated.clear()
@@ -103,9 +106,11 @@ async def timeUp():
 
         await asyncio.sleep(delta_minus_one.total_seconds())
         for player in players:
-            if in_area(player.id)[0] != "N":
+            try:
                 await bot.initiate_message(bot.client.get_user(player.id), "One Minute Warning!",
                                            interactions.game_message("one min", player.id))
+            except Exception as e:
+                await bot.initiate_message(bot.client.get_user(717943669801353300), "Error", e)
         await asyncio.sleep(dt.timedelta(minutes=1).total_seconds())
     except Exception as e:
         await bot.initiate_message(bot.client.get_user(717943669801353300), "Error", e)
